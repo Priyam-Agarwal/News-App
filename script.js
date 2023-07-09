@@ -3,28 +3,38 @@ const url = "https://newsapi.org/v2/everything?q=";
 
 window.addEventListener("load", () => fetchNews("India"));
 
-function reload() {
-    window.location.reload();
-}
-
 async function fetchNews(query) {
+  try {
     const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+    if (!res.ok) {
+      throw new Error("Failed to fetch news");
+    }
     const data = await res.json();
     bindData(data.articles);
+  } catch (error) {
+    console.log(error);
+    // Handle the error gracefully, e.g., display an error message
+  }
 }
 
 function bindData(articles) {
-    const cardsContainer = document.getElementById("cards-container");
-    const newsCardTemplate = document.getElementById("template-news-card");
+  const cardsContainer = document.getElementById("cards-container");
+  const newsCardTemplate = document.getElementById("template-news-card");
 
-    cardsContainer.innerHTML = "";
+  cardsContainer.innerHTML = "";
 
-    articles.forEach((article) => {
-        if (!article.urlToImage) return;
-        const cardClone = newsCardTemplate.content.cloneNode(true);
-        fillDataInCard(cardClone, article);
-        cardsContainer.appendChild(cardClone);
-    });
+  if (!articles || articles.length === 0) {
+    // Handle the case when there are no articles
+    // You can display a message or perform any necessary actions
+    return;
+  }
+
+  articles.forEach((article) => {
+    if (!article.urlToImage) return;
+    const cardClone = newsCardTemplate.content.cloneNode(true);
+    fillDataInCard(cardClone, article);
+    cardsContainer.appendChild(cardClone);
+  });
 }
 
 function fillDataInCard(cardClone, article) {
